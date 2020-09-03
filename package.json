@@ -6,7 +6,8 @@
 	"scripts": {
 		"start": "node server.js",
 		"test": "jest",
-		"pretest": "npx eslint ./"
+		"pretest": "npx eslint ./",
+		"pino-logflare": "node server.js | pino-logflare --key $LOGFLARE_API_KEY --source $LOGFLARE_SOURCE_KEY"
 	},
 	"dependencies": {
 		"body-parser": "^1.19.0",
