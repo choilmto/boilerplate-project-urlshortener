@@ -5,15 +5,11 @@ var express = require('express');
 var mongoose = require('mongoose');
 
 var cors = require('cors');
-// var { logger } = require('./pino');
+var { logger } = require('./pino');
 
 var app = express();
 
-// Basic Configuration 
 var port = process.env.PORT || 3000;
-
-/** this project needs a db !! **/ 
-mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(cors());
 
@@ -26,8 +22,6 @@ app.get('/', function(req, res){
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-  
-// your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
@@ -35,6 +29,15 @@ app.get("/api/hello", function (req, res) {
 const appServer = app.listen(port, function () {
   console.log('Node.js listening ...');
 });
+
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(function () {
+    logger.info("DB connected successfully.");
+  })
+  .catch(function (error) {
+    logger.fatal(error, "DB failed to connect.");
+    appServer.close();
+  });
 
 module.exports = {
   appServer,
