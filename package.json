@@ -7,7 +7,8 @@
 		"start": "node server.js",
 		"test": "jest",
 		"pretest": "npx eslint ./",
-		"pino-logflare": "node server.js | pino-logflare --key $LOGFLARE_API_KEY --source $LOGFLARE_SOURCE_KEY"
+		"pino-logflare": "node server.js | pino-logflare --key $LOGFLARE_API_KEY --source $LOGFLARE_SOURCE_KEY",
+		"coverage": "jest --collect-coverage"
 	},
 	"dependencies": {
 		"body-parser": "^1.19.0",
