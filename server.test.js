@@ -1,12 +1,20 @@
+const { createApp, startServer } = require('./app');
+const mongoose = require('mongoose');
 const supertest = require('supertest');
-// MONGO_URL is provided by @shelf/jest-mongodb
-process.env.DB_URI = process.env.MONGO_URL;
-const { appServer, mongoose } = require('./server');
-const request = supertest(appServer);
 
-afterAll(async () => {
-    await mongoose.disconnect();
-    await appServer.close()
+// MONGO_URL is provided by @shelf/jest-mongodb
+const dbUri = process.env.MONGO_URL;
+const port = 0;
+let request;
+let appServer;
+
+beforeAll (async () => {
+  appServer = await startServer(createApp, dbUri, port);
+  request = supertest(appServer);
+});
+
+afterAll(() => {
+    return Promise.all([mongoose.disconnect(), appServer.close()]);
 });
 
 describe("GET", () => {
