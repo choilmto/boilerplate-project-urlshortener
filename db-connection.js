@@ -1,9 +1,11 @@
-var mongoose = require('mongoose');
+const { MongoClient } = require("mongodb");
 
 function connectDb(logger, dbUri = process.env.DB_URI) {
-    return mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
-        .then(function () {
+    const client = new MongoClient(dbUri);
+    return client.connect()
+        .then(() => {
             logger.info("DB connected successfully.");
+            return client;
         });
 }
 
