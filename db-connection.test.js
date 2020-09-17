@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 
 // logger stub with spies
 const log = {
-    fatal: jest.fn(),
     info: jest.fn()
 }
 
