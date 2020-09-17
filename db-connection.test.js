@@ -1,5 +1,4 @@
 const connectDb = require('./db-connection');
-const mongoose = require('mongoose');
 
 // logger stub with spies
 const log = {
@@ -18,13 +17,16 @@ describe("DB connection", () => {
 describe("DB connection", () => {
     // MONGO_URL is provided by @shelf/jest-mongodb
     const DB_URI = process.env.MONGO_URL;
-
+    let client;
     afterAll(() => {
-        return mongoose.disconnect();
+        return client.close();
     });
 
     test("is succesful.", () => {
         return connectDb(log, DB_URI)
-            .then(() => expect(log.info).toBeCalled());
+            .then(connectedClient => {
+                client = connectedClient;
+                expect(log.info).toBeCalled()
+            });
     });
 });
