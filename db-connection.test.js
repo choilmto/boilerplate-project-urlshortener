@@ -12,12 +12,7 @@ describe("DB connection", () => {
     const DB_URI = '';
 
     test("fails with invalid uri for db.", () => {
-        expect.assertions(1);
-
-        return connectDb(log, DB_URI)
-            .catch(() => {
-                expect(log.fatal).toBeCalled();
-            });
+        return expect(() => connectDb(log, DB_URI)).rejects.toThrow();
     });
 });
 
