@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest",
-    "pretest": "npx eslint ./",
+    "eslint": "eslint ./",
     "pino-logflare": "node server.js | pino-logflare --key $LOGFLARE_API_KEY --source $LOGFLARE_SOURCE_KEY",
     "coverage": "jest --collect-coverage",
     "prettier": "prettier --write ."
