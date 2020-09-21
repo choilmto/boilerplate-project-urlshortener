@@ -1,9 +1,9 @@
-const logger = require('pino')({
+const logger = require("pino")({
   base: {
-    env: process.env.ENV || "ENV not set"
-  }
+    env: process.env.ENV || "ENV not set",
+  },
 });
 
 module.exports = {
-  logger
-}
+  logger,
+};
