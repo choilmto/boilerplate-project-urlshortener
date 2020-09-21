@@ -1,7 +1,7 @@
-const express = require('express');
-const connectDb = require('./db-connection');
-const { logger } = require('./pino');
-const cors = require('cors');
+const express = require("express");
+const connectDb = require("./db-connection");
+const { logger } = require("./pino");
+const cors = require("cors");
 const dns = require("dns");
 const util = require("util");
 
@@ -13,21 +13,23 @@ function createApp(client) {
   const app = express();
 
   app.use(cors());
-  app.use(express.urlencoded({
-    extended: true
-  }));
-  app.use('/public', express.static(process.cwd() + '/public'));
+  app.use(
+    express.urlencoded({
+      extended: true,
+    })
+  );
+  app.use("/public", express.static(process.cwd() + "/public"));
 
-  app.get('/', function (req, res) {
-    res.sendFile(process.cwd() + '/views/index.html');
+  app.get("/", function (req, res) {
+    res.sendFile(process.cwd() + "/views/index.html");
   });
   app.get("/api/hello", function (req, res) {
-    res.json({ greeting: 'hello API' });
+    res.json({ greeting: "hello API" });
   });
   app.get("/api/shorturl/:short_url", async function (req, res, next) {
     try {
       const { original_url } = await urlsCollection.findOne({
-        short_url: parseInt(req.params.short_url)
+        short_url: parseInt(req.params.short_url),
       });
       if (original_url) {
         res.redirect(original_url);
@@ -42,7 +44,7 @@ function createApp(client) {
   });
 
   app.post("/api/shorturl/new", async function (req, res, next) {
-    const ADDRESS_NOT_FOUND = 'ENOTFOUND';
+    const ADDRESS_NOT_FOUND = "ENOTFOUND";
     const original_url = req.body.url;
     const lookup = util.promisify(dns.lookup);
     try {
@@ -54,7 +56,7 @@ function createApp(client) {
       );
       const shortened = {
         original_url,
-        short_url: updateResults.value.seq
+        short_url: updateResults.value.seq,
       };
       await urlsCollection.insertOne(shortened);
       res.json(shortened);
@@ -78,12 +80,12 @@ async function startServer(factory, dbUri, port = process.env.PORT || 3000) {
   return {
     dbClient,
     app: app.listen(port, function () {
-      logger.info('Node.js listening ...');
-    })
+      logger.info("Node.js listening ...");
+    }),
   };
 }
 
 module.exports = {
   startServer,
-  createApp
+  createApp,
 };
