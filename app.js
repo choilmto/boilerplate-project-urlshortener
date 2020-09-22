@@ -28,11 +28,11 @@ function createApp(client) {
   });
   app.get("/api/shorturl/:short_url", async function (req, res, next) {
     try {
-      const { original_url } = await urlsCollection.findOne({
+      const result = await urlsCollection.findOne({
         short_url: parseInt(req.params.short_url),
       });
-      if (original_url) {
-        res.redirect(original_url);
+      if (result) {
+        res.redirect(result.original_url);
         return;
       }
       // spec does not specify case where short url does not yet exist
