@@ -1,8 +1,8 @@
-const logger = require("pino")({
-  base: {
-    env: process.env.ENV || "ENV not set",
-  },
-});
+// stub out logger
+const logger = {
+  fatal: () => { },
+  info: () => { }
+}
 
 module.exports = {
   logger,
