@@ -36,7 +36,30 @@ describe("GET", () => {
 });
 
 describe("Adding urls", () => {
-  test("for url that passes dns lookup.", async () => {
+  test("for url with valid host", async () => {
+    const url = "google.ca";
+    const response = await request
+      .post("/api/shorturl/new")
+      .send(`url=${url}`)
+      .set("Accept", "application/json");
+
+    expect(response.status).toBe(200);
+    expect(response.body.original_url).toBe(url);
+    expect(typeof response.body.short_url).toBe("number");
+  });
+
+  test("for url with valid host and invalid path", async () => {
+    const url = "google.ca/non-existent";
+    const response = await request
+      .post("/api/shorturl/new")
+      .send(`url=${url}`)
+      .set("Accept", "application/json");
+
+    expect(response.status).toBe(200);
+    expect(response.body.error).toBe("invalid URL");
+  });
+
+  test("for url with valid host prepended by www.", async () => {
     const url = "www.google.ca";
     const response = await request
       .post("/api/shorturl/new")
@@ -48,8 +71,32 @@ describe("Adding urls", () => {
     expect(typeof response.body.short_url).toBe("number");
   });
 
-  test("for url that fails dns lookup.", async () => {
-    const url = "http://www.google.ca/non-existent";
+  test("for url with valid host with http scheme", async () => {
+    const url = "http://google.ca";
+    const response = await request
+      .post("/api/shorturl/new")
+      .send(`url=${url}`)
+      .set("Accept", "application/json");
+
+    expect(response.status).toBe(200);
+    expect(response.body.original_url).toBe("google.ca");
+    expect(typeof response.body.short_url).toBe("number");
+  });
+
+  test("for url with valid host with https scheme", async () => {
+    const url = "https://google.ca";
+    const response = await request
+      .post("/api/shorturl/new")
+      .send(`url=${url}`)
+      .set("Accept", "application/json");
+
+    expect(response.status).toBe(200);
+    expect(response.body.original_url).toBe("google.ca");
+    expect(typeof response.body.short_url).toBe("number");
+  });
+
+  test("for url with invalid schema", async () => {
+    const url = "https://https//:google.ca";
     const response = await request
       .post("/api/shorturl/new")
       .send(`url=${url}`)
