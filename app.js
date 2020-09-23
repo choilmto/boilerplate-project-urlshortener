@@ -45,17 +45,18 @@ function createApp(client) {
 
   app.post("/api/shorturl/new", async function (req, res, next) {
     const ADDRESS_NOT_FOUND = "ENOTFOUND";
-    const original_url = req.body.url;
+    const parsed_url = req.body.url.match(/^(https?:\/\/){0,1}(.*)$/);
+    const url = parsed_url[parsed_url.length - 1];
     const lookup = util.promisify(dns.lookup);
     try {
-      await lookup(original_url);
+      await lookup(url);
       const updateResults = await countCollection.findOneAndUpdate(
         { _id: "short_urls" },
         { $inc: { seq: 1 } },
         { returnOriginal: false }
       );
       const shortened = {
-        original_url,
+        original_url: url,
         short_url: updateResults.value.seq,
       };
       await urlsCollection.insertOne(shortened);
