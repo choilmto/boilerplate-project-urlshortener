@@ -1,8 +1,8 @@
 // stub out logger
 const logger = {
-  fatal: () => { },
-  info: () => { }
-}
+  fatal: () => {},
+  info: () => {},
+};
 
 module.exports = {
   logger,
