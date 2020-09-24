@@ -44,9 +44,12 @@ function createApp(client) {
   });
 
   app.post("/api/shorturl/new", async function (req, res, next) {
-    const ADDRESS_NOT_FOUND = "ENOTFOUND";
-    const parsed_url = req.body.url.match(/^(https?:\/\/){0,1}(.*)$/);
-    const url = parsed_url[parsed_url.length - 1];
+    let url;
+    try {
+      url = new URL(req.body.url).hostname;
+    } catch (err) {
+      res.json({ error: "invalid URL" });
+    }
     const lookup = util.promisify(dns.lookup);
     try {
       await lookup(url);
@@ -56,12 +59,14 @@ function createApp(client) {
         { returnOriginal: false }
       );
       const shortened = {
-        original_url: url,
+        original_url: req.body.url,
         short_url: updateResults.value.seq,
       };
       await urlsCollection.insertOne(shortened);
+      // shortened is mutated to include an id
       res.json(shortened);
     } catch (err) {
+      const ADDRESS_NOT_FOUND = "ENOTFOUND";
       if (err.code === ADDRESS_NOT_FOUND) {
         res.json({ error: "invalid URL" });
         return;
