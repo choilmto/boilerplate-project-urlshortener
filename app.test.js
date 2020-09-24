@@ -36,8 +36,8 @@ describe("GET", () => {
 });
 
 describe("Adding urls", () => {
-  test("for url with valid host", async () => {
-    const url = "google.ca";
+  test("for url with resolvable domain", async () => {
+    const url = "https://www.google.ca";
     const response = await request
       .post("/api/shorturl/new")
       .send(`url=${url}`)
@@ -48,8 +48,20 @@ describe("Adding urls", () => {
     expect(typeof response.body.short_url).toBe("number");
   });
 
-  test("for url with valid host and invalid path", async () => {
-    const url = "google.ca/non-existent";
+  test("for url with resolvable domain prepended by http scheme", async () => {
+    const url = "http://www.google.ca";
+    const response = await request
+      .post("/api/shorturl/new")
+      .send(`url=${url}`)
+      .set("Accept", "application/json");
+
+    expect(response.status).toBe(200);
+    expect(response.body.original_url).toBe(url);
+    expect(typeof response.body.short_url).toBe("number");
+  });
+
+  test("for url with resolvable domain but missing scheme", async () => {
+    const url = "www.google.ca";
     const response = await request
       .post("/api/shorturl/new")
       .send(`url=${url}`)
@@ -59,44 +71,8 @@ describe("Adding urls", () => {
     expect(response.body.error).toBe("invalid URL");
   });
 
-  test("for url with valid host prepended by www.", async () => {
-    const url = "www.google.ca";
-    const response = await request
-      .post("/api/shorturl/new")
-      .send(`url=${url}`)
-      .set("Accept", "application/json");
-
-    expect(response.status).toBe(200);
-    expect(response.body.original_url).toBe(url);
-    expect(typeof response.body.short_url).toBe("number");
-  });
-
-  test("for url with valid host with http scheme", async () => {
-    const url = "http://google.ca";
-    const response = await request
-      .post("/api/shorturl/new")
-      .send(`url=${url}`)
-      .set("Accept", "application/json");
-
-    expect(response.status).toBe(200);
-    expect(response.body.original_url).toBe("google.ca");
-    expect(typeof response.body.short_url).toBe("number");
-  });
-
-  test("for url with valid host with https scheme", async () => {
-    const url = "https://google.ca";
-    const response = await request
-      .post("/api/shorturl/new")
-      .send(`url=${url}`)
-      .set("Accept", "application/json");
-
-    expect(response.status).toBe(200);
-    expect(response.body.original_url).toBe("google.ca");
-    expect(typeof response.body.short_url).toBe("number");
-  });
-
-  test("for url with invalid schema", async () => {
-    const url = "https://https//:google.ca";
+  test("for url with unresolvable domain but follows the format", async () => {
+    const url = "https://www.ssssssssssssssssssssssssssssss.ca";
     const response = await request
       .post("/api/shorturl/new")
       .send(`url=${url}`)
@@ -108,8 +84,8 @@ describe("Adding urls", () => {
 });
 
 describe("Getting urls", () => {
-  test("for short url that's been added.", async () => {
-    const url = "www.google.ca";
+  test("for short url that's been added", async () => {
+    const url = "https://www.google.ca";
     const addResponse = await request
       .post("/api/shorturl/new")
       .send(`url=${url}`);
@@ -122,7 +98,7 @@ describe("Getting urls", () => {
     expect(response.text).toBe(`Found. Redirecting to ${url}`);
   });
 
-  test("for short url that has not been added.", async () => {
+  test("for short url that has not been added", async () => {
     const response = await request.get("/api/short/url/1000000");
 
     expect(response.status).toBe(404);
